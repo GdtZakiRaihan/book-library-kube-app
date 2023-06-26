@@ -72,4 +72,4 @@ jobs:
           -H "Authorization: token ${{secrets.API_TOKEN_GITHUB}}" \
           --request POST \
           --data '{"event_type": "update-book-ui-service-build-number", "client_payload": { "buildnumber": "'"$BUILD_NUMBER"'" }}' \
-          https://api.github.com/repos/zakiraihan/book-library-kube-infra/dispatches
+          https://api.github.com/repos/GdtZakiRaihan/book-library-kube-infra/dispatches
