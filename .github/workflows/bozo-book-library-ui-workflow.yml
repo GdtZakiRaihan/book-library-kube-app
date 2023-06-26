@@ -38,7 +38,7 @@ jobs:
     - name: Generate build number
       uses: einaregilsson/build-number@v3
       with:
-        token: ${{secrets.github_token}}        
+        token: ${{secrets.API_TOKEN_GITHUB}}        
 
     - name: Print new build number
       run: echo "Build number is $BUILD_NUMBER"
@@ -72,4 +72,4 @@ jobs:
           -H "Authorization: token ${{secrets.API_TOKEN_GITHUB}}" \
           --request POST \
           --data '{"event_type": "update-book-ui-service-build-number", "client_payload": { "buildnumber": "'"$BUILD_NUMBER"'" }}' \
-          https://api.github.com/repos/abvijaykumar/book-library-kube-infra/dispatches
+          https://api.github.com/repos/zakiraihan/book-library-kube-infra/dispatches
