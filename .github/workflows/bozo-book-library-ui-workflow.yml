@@ -21,7 +21,7 @@ on:
 # Environment variables available to all jobs and steps in this workflow
 env:
   REGISTRY_HOSTNAME: docker.io
-  DOCKER_USERNAME: abvijaykumar
+  DOCKER_USERNAME: zakiraihan
   IMAGE_NAME: bozo-book-library-ui-service
   PORT: 5001
 
@@ -34,19 +34,6 @@ jobs:
 
     - name: Checkout
       uses: actions/checkout@v2
-
-    - name: Build Status Slack Notification
-      uses: ravsamhq/notify-slack-action@v2
-      if: always()
-      with:
-        status: ${{ job.status }}
-        token: ${{ secrets.GITHUB_TOKEN }}
-        notification_title: "Starting the BozoBookLibrary UI ReactJS Build: {status_message}"
-        message_format: "{emoji} *{workflow}* {status_message} in <{repo_url}|{repo}>"
-        footer: "Linked Repo <{repo_url}|{repo}> | <{workflow_url}|View Workflow>"
-        notify_when: "failure, success, warning"
-      env:
-        SLACK_WEBHOOK_URL: ${{ secrets.GITOPS_SLACK_API }}
 
     - name: Generate build number
       uses: einaregilsson/build-number@v3
@@ -79,19 +66,6 @@ jobs:
         docker image tag $IMAGE_NAME:$BUILD_NUMBER docker.io/$DOCKER_USERNAME/$IMAGE_NAME:$BUILD_NUMBER
         docker image push docker.io/$DOCKER_USERNAME/$IMAGE_NAME:$BUILD_NUMBER
 
-    - name: BuiDocker Build & Push  Status Slack Notification
-      uses: ravsamhq/notify-slack-action@v2
-      if: always()
-      with:
-        status: ${{ job.status }}
-        token: ${{ secrets.GITHUB_TOKEN }}
-        notification_title: "Docker Build & Push Status: {status_message}"
-        message_format: "{emoji} *{workflow}* {status_message} in <{repo_url}|{repo}>"
-        footer: "Linked Repo <{repo_url}|{repo}> | <{workflow_url}|View Workflow>"
-        notify_when: "failure, success, warning"
-      env:
-        SLACK_WEBHOOK_URL: ${{ secrets.GITOPS_SLACK_API }}
-
     - name: Invoke book-ui-service Infra GitOps pipe
       run: |
           curl -H "Accept: application/vnd.github.everest-preview+json" \
@@ -99,16 +73,3 @@ jobs:
           --request POST \
           --data '{"event_type": "update-book-ui-service-build-number", "client_payload": { "buildnumber": "'"$BUILD_NUMBER"'" }}' \
           https://api.github.com/repos/abvijaykumar/book-library-kube-infra/dispatches
-
-    - name: Invoked Infra Workflow Slack Notification
-      uses: ravsamhq/notify-slack-action@v2
-      if: always()
-      with:
-        status: ${{ job.status }}
-        token: ${{ secrets.GITHUB_TOKEN }}
-        notification_title: "Infra Workflow trigger Status: {status_message}"
-        message_format: "{emoji} *{workflow}* {status_message} in <{repo_url}|{repo}>"
-        footer: "Linked Repo <{repo_url}|{repo}> | <{workflow_url}|View Workflow>"
-        notify_when: "failure, success, warning"
-      env:
-        SLACK_WEBHOOK_URL: ${{ secrets.GITOPS_SLACK_API }}
